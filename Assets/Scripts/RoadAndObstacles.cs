@@ -42,12 +42,23 @@ public class RoadAndObstacles : MonoBehaviour
         CreateObstacle("Obstacle_5", -3, 36);
     }
 
+<<<<<<< Updated upstream
     void CreateObstacle(string name, float x, float z)
     {
         GameObject obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
         obstacle.name = name;
+=======
+    void CreateObstacle(string obstacleName, float x, float z)
+    {
+        GameObject obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        obstacle.name = obstacleName;
+>>>>>>> Stashed changes
         obstacle.transform.position = new Vector3(x, 0.75f, z);
         obstacle.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
         obstacle.GetComponent<Renderer>().material.color = Color.red;
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
