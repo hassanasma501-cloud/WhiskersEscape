@@ -1,21 +1,45 @@
 using UnityEngine;
 
 public class CatFollower : MonoBehaviour
-
 {
     public Transform target;
-    public float followSpeed = 4f;
-    public float followDistance = 6f;
-    public float catchDistance = 1.5f;
+    public string playerTag = "Player";
+
+    public float followSpeed = 10f;
+    public float catchDistance = 4f;
+
+    public GameObject gameOverPanel;
+
+    private bool hasCaughtPlayer = false;
+
+    void Start()
+    {
+        Time.timeScale = 1f;
+
+        if (target == null)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag(playerTag);
+
+            if (playerObject != null)
+            {
+                target = playerObject.transform;
+            }
+        }
+
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(false);
+        }
+    }
 
     void Update()
     {
-        if (target == null)
+        if (target == null || hasCaughtPlayer)
         {
             return;
         }
 
-        Vector3 targetPosition = target.position - target.forward * followDistance;
+        Vector3 targetPosition = target.position;
         targetPosition.y = transform.position.y;
 
         transform.position = Vector3.MoveTowards(
@@ -24,13 +48,33 @@ public class CatFollower : MonoBehaviour
             followSpeed * Time.deltaTime
         );
 
-        transform.LookAt(target);
+        Vector3 direction = target.position - transform.position;
+        direction.y = 0f;
+
+        if (direction != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
 
         float distance = Vector3.Distance(transform.position, target.position);
 
         if (distance <= catchDistance)
         {
-            Debug.Log("Game Over: the cat caught the mouse!");
+            CatchPlayer();
         }
+    }
+
+    void CatchPlayer()
+    {
+        hasCaughtPlayer = true;
+
+        Debug.Log("Game Over: the cat caught the mouse!");
+
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+
+        Time.timeScale = 0f;
     }
 }
