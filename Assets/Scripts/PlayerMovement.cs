@@ -2,7 +2,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
    [Header("Forward Movement")]
-   public float forwardSpeed = 5f;
+   public float forwardSpeed = 3f;
    public float speedIncrease = 0.5f;
    [Header("Lane Movement")]
    public float laneDistance = 3f;
@@ -14,9 +14,11 @@ public class PlayerMovement : MonoBehaviour
    public float slideHeight = 1f;
    private CharacterController controller;
    private Vector3 velocity;
-   private int currentLane = 1; // 0 = gauche, 1 = centre, 2 = droite
+   private int currentLane = 1;
    private float normalHeight;
    private Vector3 normalCenter;
+   private bool gameOver = false;
+   private bool victory = false;
    void Start()
    {
        controller = GetComponent<CharacterController>();
@@ -25,14 +27,16 @@ public class PlayerMovement : MonoBehaviour
    }
    void Update()
    {
-       // Avance automatique
+       if (gameOver || victory)
+           return;
        Vector3 move = Vector3.forward * forwardSpeed;
-       // Changement de voie
+       // Gauche
        if (Input.GetKeyDown(KeyCode.LeftArrow))
        {
            currentLane--;
            currentLane = Mathf.Clamp(currentLane, 0, 2);
        }
+       // Droite
        if (Input.GetKeyDown(KeyCode.RightArrow))
        {
            currentLane++;
@@ -65,9 +69,31 @@ public class PlayerMovement : MonoBehaviour
        move.y = velocity.y;
        controller.Move(move * Time.deltaTime);
    }
-   // À appeler plus tard quand un fromage est ramassé
+   // Quand un fromage est ramassé
    public void IncreaseSpeed()
    {
        forwardSpeed += speedIncrease;
+   }
+   // Collision obstacle
+   private void OnControllerColliderHit(ControllerColliderHit hit)
+   {
+       if (hit.gameObject.CompareTag("Obstacle"))
+       {
+           gameOver = true;
+           forwardSpeed = 0f;
+           laneChangeSpeed = 0f;
+           Debug.Log("GAME OVER");
+       }
+   }
+   // Arrivée
+   private void OnTriggerEnter(Collider other)
+   {
+       if (other.CompareTag("Finish"))
+       {
+           victory = true;
+           forwardSpeed = 0f;
+           laneChangeSpeed = 0f;
+           Debug.Log("VICTORY");
+       }
    }
 }
