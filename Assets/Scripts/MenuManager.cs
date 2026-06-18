@@ -36,6 +36,7 @@ public class MenuManager : MonoBehaviour
     public void YouWin()
     {
         panelYouWin.SetActive(true);
+        Time.timeScale = 0f;
     }
 
     public void Rejouer()
