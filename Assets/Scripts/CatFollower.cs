@@ -14,7 +14,7 @@ public class CatFollower : MonoBehaviour
 
     void Start()
     {
-        Time.timeScale = 1f;
+       
 
         if (target == null)
         {
