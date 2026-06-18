@@ -18,6 +18,8 @@ public class PlayerMovement : MonoBehaviour
    private int currentLane = 1;
    private float normalHeight;
    private Vector3 normalCenter;
+   public bool gameOver = false;
+   public bool victory = false;
    void Start()
    {
        controller = GetComponent<CharacterController>();
@@ -26,6 +28,9 @@ public class PlayerMovement : MonoBehaviour
    }
    void Update()
    {
+       // Arrêt complet si Game Over ou Victory
+       if (gameOver || victory)
+           return;
        // Avance automatique
        Vector3 move = Vector3.forward * forwardSpeed;
        // Déplacement gauche
@@ -40,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
            currentLane++;
            currentLane = Mathf.Clamp(currentLane, 0, 2);
        }
-       // Calcul de la voie cible
+       // Placement sur la voie
        float targetX = (currentLane - 1) * laneDistance;
        float deltaX = targetX - transform.position.x;
        move.x = deltaX * laneChangeSpeed;
@@ -68,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
        move.y = velocity.y;
        controller.Move(move * Time.deltaTime);
    }
-   // Appelé lorsqu'un fromage est ramassé
+   // Appelé quand un fromage est ramassé
    public void IncreaseSpeed()
    {
        forwardSpeed += speedIncrease;
@@ -78,9 +83,19 @@ public class PlayerMovement : MonoBehaviour
    {
        if (hit.gameObject.CompareTag("Obstacle"))
        {
-           forwardSpeed -= 2f;
-           if (forwardSpeed < 2f)
-               forwardSpeed = 2f;
+           gameOver = true;
+           forwardSpeed = 0f;
+           Debug.Log("GAME OVER");
+       }
+   }
+   // Ligne d'arrivée
+   private void OnTriggerEnter(Collider other)
+   {
+       if (other.CompareTag("Finish"))
+       {
+           victory = true;
+           forwardSpeed = 0f;
+           Debug.Log("VICTORY");
        }
    }
 }
