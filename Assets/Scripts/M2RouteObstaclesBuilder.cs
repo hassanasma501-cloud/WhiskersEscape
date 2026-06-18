@@ -14,18 +14,18 @@ public class M2RouteObstaclesBuilder : MonoBehaviour
         CreateCube("LeftWall", new Vector3(-5, 1, 25), new Vector3(0.3f, 2, 50), Color.black);
         CreateCube("RightWall", new Vector3(5, 1, 25), new Vector3(0.3f, 2, 50), Color.black);
 
-        // Lignes simples pour montrer les voies
+        // Lignes pour montrer les voies
         CreateCube("LeftLaneLine", new Vector3(-1.5f, 0.15f, 25), new Vector3(0.08f, 0.05f, 50), Color.white);
         CreateCube("RightLaneLine", new Vector3(1.5f, 0.15f, 25), new Vector3(0.08f, 0.05f, 50), Color.white);
 
-        // Obstacles simples avec des cubes
+        // Obstacles simples
         CreateCube("Obstacle_1_Middle", new Vector3(0, 0.75f, 8), new Vector3(1.5f, 1.5f, 1.5f), Color.red);
         CreateCube("Obstacle_2_Left", new Vector3(-3, 0.75f, 15), new Vector3(1.5f, 1.5f, 1.5f), Color.red);
         CreateCube("Obstacle_3_Right", new Vector3(3, 0.75f, 23), new Vector3(1.5f, 1.5f, 1.5f), Color.red);
         CreateCube("Obstacle_4_Middle", new Vector3(0, 0.75f, 32), new Vector3(1.5f, 1.5f, 1.5f), Color.red);
         CreateCube("Obstacle_5_Left", new Vector3(-3, 0.75f, 42), new Vector3(1.5f, 1.5f, 1.5f), Color.red);
 
-        // Petit décor de base sur les côtés
+        // Décor simple de base
         CreateCube("Decoration_Left_Block", new Vector3(-7, 0.5f, 12), new Vector3(1.5f, 1, 3), Color.yellow);
         CreateCube("Decoration_Right_Block", new Vector3(7, 0.5f, 28), new Vector3(1.5f, 1, 3), Color.yellow);
         CreateCube("Decoration_Back_Block", new Vector3(0, 0.5f, 52), new Vector3(9, 1, 0.5f), Color.yellow);
@@ -40,8 +40,24 @@ public class M2RouteObstaclesBuilder : MonoBehaviour
         cube.transform.position = position;
         cube.transform.localScale = scale;
 
-        Renderer renderer = cube.GetComponent<Renderer>();
-        renderer.material.color = color;
+        Renderer cubeRenderer = cube.GetComponent<Renderer>();
+        cubeRenderer.sharedMaterial = CreateMaterial(objectName + "_Material", color);
+    }
+
+    Material CreateMaterial(string materialName, Color color)
+    {
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+
+        if (shader == null)
+        {
+            shader = Shader.Find("Standard");
+        }
+
+        Material material = new Material(shader);
+        material.name = materialName;
+        material.color = color;
+
+        return material;
     }
 
     void ClearOldObjects()
