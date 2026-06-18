@@ -14,7 +14,8 @@ public class PlayerMovement : MonoBehaviour
    public float slideHeight = 1f;
    private CharacterController controller;
    private Vector3 velocity;
-   private int currentLane = 1; // 0 = gauche, 1 = centre, 2 = droite
+   // 0 = gauche, 1 = centre, 2 = droite
+   private int currentLane = 1;
    private float normalHeight;
    private Vector3 normalCenter;
    void Start()
@@ -27,17 +28,19 @@ public class PlayerMovement : MonoBehaviour
    {
        // Avance automatique
        Vector3 move = Vector3.forward * forwardSpeed;
-       // Changement de voie
+       // Déplacement gauche
        if (Input.GetKeyDown(KeyCode.LeftArrow))
        {
            currentLane--;
            currentLane = Mathf.Clamp(currentLane, 0, 2);
        }
+       // Déplacement droite
        if (Input.GetKeyDown(KeyCode.RightArrow))
        {
            currentLane++;
            currentLane = Mathf.Clamp(currentLane, 0, 2);
        }
+       // Calcul de la voie cible
        float targetX = (currentLane - 1) * laneDistance;
        float deltaX = targetX - transform.position.x;
        move.x = deltaX * laneChangeSpeed;
@@ -65,9 +68,19 @@ public class PlayerMovement : MonoBehaviour
        move.y = velocity.y;
        controller.Move(move * Time.deltaTime);
    }
-   // À appeler plus tard quand un fromage est ramassé
+   // Appelé lorsqu'un fromage est ramassé
    public void IncreaseSpeed()
    {
        forwardSpeed += speedIncrease;
+   }
+   // Collision avec un obstacle
+   private void OnControllerColliderHit(ControllerColliderHit hit)
+   {
+       if (hit.gameObject.CompareTag("Obstacle"))
+       {
+           forwardSpeed -= 2f;
+           if (forwardSpeed < 2f)
+               forwardSpeed = 2f;
+       }
    }
 }
