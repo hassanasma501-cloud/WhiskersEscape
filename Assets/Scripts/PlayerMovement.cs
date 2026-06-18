@@ -2,7 +2,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
    [Header("Forward Movement")]
-   public float forwardSpeed = 5f;
+   public float forwardSpeed = 3f;
    public float speedIncrease = 0.5f;
    [Header("Lane Movement")]
    public float laneDistance = 3f;
@@ -14,12 +14,11 @@ public class PlayerMovement : MonoBehaviour
    public float slideHeight = 1f;
    private CharacterController controller;
    private Vector3 velocity;
-   // 0 = gauche, 1 = centre, 2 = droite
    private int currentLane = 1;
    private float normalHeight;
    private Vector3 normalCenter;
-   public bool gameOver = false;
-   public bool victory = false;
+   private bool gameOver = false;
+   private bool victory = false;
    void Start()
    {
        controller = GetComponent<CharacterController>();
@@ -28,24 +27,21 @@ public class PlayerMovement : MonoBehaviour
    }
    void Update()
    {
-       // Arrêt complet si Game Over ou Victory
        if (gameOver || victory)
            return;
-       // Avance automatique
        Vector3 move = Vector3.forward * forwardSpeed;
-       // Déplacement gauche
+       // Gauche
        if (Input.GetKeyDown(KeyCode.LeftArrow))
        {
            currentLane--;
            currentLane = Mathf.Clamp(currentLane, 0, 2);
        }
-       // Déplacement droite
+       // Droite
        if (Input.GetKeyDown(KeyCode.RightArrow))
        {
            currentLane++;
            currentLane = Mathf.Clamp(currentLane, 0, 2);
        }
-       // Placement sur la voie
        float targetX = (currentLane - 1) * laneDistance;
        float deltaX = targetX - transform.position.x;
        move.x = deltaX * laneChangeSpeed;
@@ -73,28 +69,30 @@ public class PlayerMovement : MonoBehaviour
        move.y = velocity.y;
        controller.Move(move * Time.deltaTime);
    }
-   // Appelé quand un fromage est ramassé
+   // Quand un fromage est ramassé
    public void IncreaseSpeed()
    {
        forwardSpeed += speedIncrease;
    }
-   // Collision avec un obstacle
+   // Collision obstacle
    private void OnControllerColliderHit(ControllerColliderHit hit)
    {
        if (hit.gameObject.CompareTag("Obstacle"))
        {
            gameOver = true;
            forwardSpeed = 0f;
+           laneChangeSpeed = 0f;
            Debug.Log("GAME OVER");
        }
    }
-   // Ligne d'arrivée
+   // Arrivée
    private void OnTriggerEnter(Collider other)
    {
        if (other.CompareTag("Finish"))
        {
            victory = true;
            forwardSpeed = 0f;
+           laneChangeSpeed = 0f;
            Debug.Log("VICTORY");
        }
    }
