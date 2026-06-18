@@ -5,12 +5,14 @@ public class MenuManager : MonoBehaviour
 {
     public GameObject panelStart;
     public GameObject panelGameOver;
+    public GameObject panelYouWin;
     public GameObject textScore;
 
     void Start()
     {
         textScore.SetActive(false);
         panelGameOver.SetActive(false);
+        panelYouWin.SetActive(false);
     }
 
     public void LancerJeu()
@@ -22,6 +24,11 @@ public class MenuManager : MonoBehaviour
     public void GameOver()
     {
         panelGameOver.SetActive(true);
+    }
+
+    public void YouWin()
+    {
+        panelYouWin.SetActive(true);
     }
 
     public void Rejouer()
